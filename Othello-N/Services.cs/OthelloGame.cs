@@ -153,27 +153,6 @@ public class OthelloGame
         OnTurnChanged?.Invoke(_currentPlayer);
     }
 
-    public void PrintCurrentTurnInfo()
-    {
-        PrintBoard();
-        PrintScores();
-        
-        var validMoves = GetValidMoves();
-        if (validMoves.Count > 0)
-        {
-            Console.WriteLine("Langkah yang tersedia: ");
-            foreach (var move in validMoves)
-            {
-                Console.WriteLine($"({move.X + 1}, {move.Y + 1})");
-            }
-        }
-        else
-        {
-            Console.WriteLine("Tidak ada langkah valid - harus skip turn");
-        }
-        Console.WriteLine();
-    }
-
     // ========== METHOD-METHOD GAME LOGIC ==========
 
     private void InitializeBoardDisks()
@@ -190,7 +169,7 @@ public class OthelloGame
         _board.Squares[position.X, position.Y].Disk = Disk;
     }
 
-    private IPlayer GetPlayerByColor(DiskColor color)
+    public IPlayer GetPlayerByColor(DiskColor color)
     {
         return _players.Find(p => p.Color == color);
     }
@@ -198,6 +177,11 @@ public class OthelloGame
     public IPlayer GetCurrentPlayer()
     {
         return _currentPlayer;
+    }
+
+    public List<Position> GetValidMoves()
+    {
+        return GetPossibleMovesForPlayer(_currentPlayer);
     }
 
     private List<Position> GetPossibleMovesForPlayer(IPlayer player)
@@ -365,33 +349,25 @@ public class OthelloGame
         }
     }
 
-    public void PrintBoard()
+    // ========== PUBLIC ACCESS METHODS FOR UI ==========
+    
+    public IBoard GetBoard()
     {
-        Console.WriteLine("  1 2 3 4 5 6 7 8");
-        for (int i = 0; i < _size; i++)
-        {
-            Console.Write($"{i + 1} ");
-            for (int j = 0; j < _size; j++)
-            {
-                var Disk = _board.Squares[i, j].Disk;
-                char displayChar = Disk == null ? '.' : 
-                                 Disk.Color == DiskColor.Black ? 'B' : 'W';
-                Console.Write($"{displayChar} ");
-            }
-            Console.WriteLine();
-        }
-        Console.WriteLine();
+        return _board;
     }
 
-    public List<Position> GetValidMoves()
+    public int GetBoardSize()
     {
-        return GetPossibleMovesForPlayer(_currentPlayer);
+        return _size;
     }
 
-    public void PrintScores()
+    public List<IPlayer> GetPlayers()
     {
-        int blackScore = GetPlayerScore(GetPlayerByColor(DiskColor.Black));
-        int whiteScore = GetPlayerScore(GetPlayerByColor(DiskColor.White));
-        Console.WriteLine($"Skor - Hitam: {blackScore}, Putih: {whiteScore}");
+        return _players;
+    }
+
+    public StatusType GetGameStatus()
+    {
+        return _status;
     }
 }
